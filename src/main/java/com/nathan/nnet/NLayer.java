@@ -17,6 +17,7 @@ public class NLayer {
     private final float[][] weights;
     private final float[][] weightGradients;
     private final Strategy strategy;
+    private final WeightInitialization initialization;
 
     public NLayer(
             int inputSize,
@@ -31,6 +32,7 @@ public class NLayer {
         this.inputSize = inputSize;
         this.outputSize = outputSize;
         this.learningRate = learningRate;
+        this.initialization = initialization;
 
         // initialize weights, biases and weight gradients
         this.biases = new float[outputSize];
@@ -131,5 +133,29 @@ public class NLayer {
             System.out.println();
         }
         System.out.println();
+    }
+
+    public int getInputSize() {
+        return inputSize;
+    }
+
+    public int getOutputSize() {
+        return outputSize;
+    }
+
+    public float[] getBiases() {
+        return biases;
+    }
+
+    public float[][] getWeights() {
+        return weights;
+    }
+
+    public Strategy getStrategy() {
+        return strategy;
+    }
+
+    public WeightInitialization getInitialization() {
+        return initialization;
     }
 }

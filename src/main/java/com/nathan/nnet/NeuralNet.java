@@ -11,6 +11,17 @@ import java.util.List;
 public class NeuralNet {
     private final ErrorCorrection correction;
     private final List<NLayer> layers;
+    private final float learningRate;
+
+    public NeuralNet(
+            float learningRate,
+            List<NLayer> layers,
+            ErrorCorrection correction
+    ) {
+        this.correction = correction;
+        this.learningRate = learningRate;
+        this.layers = layers;
+    }
 
     public NeuralNet(
             int inputSize,
@@ -25,6 +36,7 @@ public class NeuralNet {
             ErrorCorrection correction
     ) {
         this.correction = correction;
+        this.learningRate = learningRate;
         this.layers = new ArrayList<>();
 
         if (hLayers == 0) {
@@ -53,10 +65,11 @@ public class NeuralNet {
         }
     }
 
-    public void trainModel(List<TrainingData> trainingData, int epoch) throws Exception {
-        for (int e = 0; e < epoch; e++) {
+    public void trainModel(List<TrainingData> trainingData, int size) throws Exception {
+        for (int e = 0; e < Math.floor((double) trainingData.size() / (double) size); e++) {
             float error = 0;
-            for (TrainingData data : trainingData) {
+            for (int t = e * size; t < ((e * size) + size ); t++) {
+                TrainingData data = trainingData.get(t);
                 float[] activations = data.getInputData();
 
                 // forward propagation
@@ -79,7 +92,7 @@ public class NeuralNet {
 
             // update weights and biases
             for (NLayer layer : this.layers)
-                layer.updateWeightsAndBiases(trainingData.size());
+                layer.updateWeightsAndBiases(size);
         }
     }
 
@@ -91,5 +104,17 @@ public class NeuralNet {
             activations = layer.computeActivation(activations);
 
         return activations;
+    }
+
+    public float getLearningRate() {
+        return learningRate;
+    }
+
+    public ErrorCorrection getCorrection() {
+        return correction;
+    }
+
+    public List<NLayer> getLayers() {
+        return layers;
     }
 }
