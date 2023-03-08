@@ -1,14 +1,17 @@
 package com.nathan.nnet;
 
+import com.nathan.nnet.correction.CrossEntropy;
 import com.nathan.nnet.correction.MeanSquareError;
+import com.nathan.nnet.dataset.CSV;
+import com.nathan.nnet.dataset.Normalization;
 import com.nathan.nnet.initialization.HeInitial;
 import com.nathan.nnet.initialization.NormalizedXavier;
 import com.nathan.nnet.store.JsonStorage;
+import com.nathan.nnet.strategies.LeakyReLu;
 import com.nathan.nnet.strategies.ReLu;
 import com.nathan.nnet.strategies.Sigmoid;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -127,8 +130,7 @@ class NnetBuilderTests {
 			.setErrorCorrection(0.1f, new MeanSquareError())
 			.build()
 			.setTrainingParameters(trainingData, 50,100)
-			.train()
-			.train()
+			.train(5)
 			.test()
 			.setModelStorage("E:\\ML\\tests\\digits.json", new JsonStorage())
 			.save();
@@ -136,41 +138,34 @@ class NnetBuilderTests {
 
 	@Test
 	void loadAndTestModel() throws Exception {
-		// training data
-		List<TrainingData> trainingData = new ArrayList<>();
-
-		float[][] inputs = {
-				{ 0, 1, 0, 0, 1, 0, 0 },
-				{ 1, 1, 1, 0, 0, 1, 1 },
-				{ 1, 1, 1, 0, 1, 1, 0 },
-				{ 0, 1, 1, 1, 1, 0, 0 },
-				{ 1, 0, 1, 1, 1, 1, 0 },
-				{ 1, 0, 1, 1, 1, 1, 1 },
-				{ 1, 1, 0, 0, 1, 0, 0 },
-				{ 1, 1, 1, 1, 1, 1, 1 },
-				{ 1, 1, 1, 1, 1, 0, 0 },
-				{ 1, 1, 0, 1, 1, 1, 1 }
-		};
-
-		float[][] outputs = {
-				{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-				{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-		};
-
-		for (int x = 0; x < inputs.length; x++) trainingData.add(new TrainingData(inputs[x], outputs[x]));
+		CSV csv = new CSV();
+		List<TrainingData> dataset = csv.loadDataset("E:\\ML\\datasets\\diabetes2.csv", "Outcome", new Normalization());
 
 		NeuralNetBuilder neuralNetBuilder = new NeuralNetBuilder();
 		neuralNetBuilder
-				.loadModel("E:\\ML\\tests\\digits.json", new JsonStorage())
-				.setTrainingParameters(trainingData, 50,10)
-				.test();
+				.loadModel("E:\\ML\\tests\\diabetes.json", new JsonStorage())
+				.setTrainingParameters(dataset, 256,250)
+				.test()
+				.run(dataset.subList(20, 30));
+	}
+
+	@Test
+	void loadCsv() throws Exception {
+		CSV csv = new CSV();
+		List<TrainingData> dataset = csv.loadDataset("E:\\ML\\datasets\\diabetes2.csv", "Outcome", new Normalization());
+
+		NeuralNetBuilder neuralNetBuilder = new NeuralNetBuilder();
+		neuralNetBuilder
+				.setDimensions(8, 1)
+				.setHiddenLayers(2, 10)
+				.setWeightInitialization(new HeInitial(), new NormalizedXavier())
+				.setLearningStrategy(new LeakyReLu(), new Sigmoid())
+				.setErrorCorrection(0.2f, new MeanSquareError())
+				.build()
+				.setTrainingParameters(dataset, 256,250)
+				.train(150000)
+				.test()
+				.setModelStorage("E:\\ML\\tests\\diabetes.json", new JsonStorage())
+				.save();
 	}
 }

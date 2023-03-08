@@ -106,6 +106,13 @@ public class NeuralNetBuilder {
 		return this;
 	}
 
+	public NeuralNetBuilder train(int repeat) throws Exception {
+		for (int x = 0; x < repeat; x++)
+			this.neuralNet.trainModel(this.trainingData, this.batchSize);
+
+		return this;
+	}
+
 	public NeuralNetBuilder test() throws Exception {
 		float error = 0;
 		for (int x = 0; x < this.testSize; x++) {
@@ -127,6 +134,8 @@ public class NeuralNetBuilder {
 			float[] output = this.neuralNet.runModel(data.getInputData());
 
 			System.out.println("Output: " + Arrays.toString(output));
+			System.out.println("Expected Output: " + Arrays.toString(data.getOutputData()));
+			System.out.println();
 		}
 
 		return this;
