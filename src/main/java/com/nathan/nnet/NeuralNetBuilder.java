@@ -78,7 +78,15 @@ public class NeuralNetBuilder {
 
 	public NeuralNetBuilder loadModel(String location, ModelStorage modelStorage) throws Exception {
 		this.modelStorage = modelStorage;
-		this.neuralNet = this.modelStorage.loadModel(location);
+		this.neuralNet = this.modelStorage.loadModel(location, null);
+		this.correction = this.neuralNet.getCorrection();
+
+		return this;
+	}
+
+	public NeuralNetBuilder loadModel(String location, ModelStorage modelStorage, float learningRate) throws Exception {
+		this.modelStorage = modelStorage;
+		this.neuralNet = this.modelStorage.loadModel(location, learningRate);
 		this.correction = this.neuralNet.getCorrection();
 
 		return this;
@@ -101,14 +109,14 @@ public class NeuralNetBuilder {
 	}
 
 	public NeuralNetBuilder train() throws Exception {
-		this.neuralNet.trainModel(this.trainingData, this.batchSize);
+		this.neuralNet.trainModel(this.trainingData.subList(this.testSize, this.trainingData.size()), this.batchSize);
 
 		return this;
 	}
 
 	public NeuralNetBuilder train(int repeat) throws Exception {
 		for (int x = 0; x < repeat; x++)
-			this.neuralNet.trainModel(this.trainingData, this.batchSize);
+			this.neuralNet.trainModel(this.trainingData.subList(this.testSize, this.trainingData.size()), this.batchSize);
 
 		return this;
 	}

@@ -12,14 +12,17 @@ import java.util.*;
 
 public class JsonStorage implements ModelStorage {
     @Override
-    public NeuralNet loadModel(String location) throws Exception {
+    public NeuralNet loadModel(String location, Float rate) throws Exception {
         JSONParser parser = new JSONParser();
 
         FileReader reader = new FileReader(location);
         JSONObject model = (JSONObject)  parser.parse(reader);
 
-        Double learningRate = (Double) model.get("learningRate");
+        Double savedRate = (Double) model.get("learningRate");
         String correction = (String) model.get("correction");
+
+        float learningRate = savedRate.floatValue();
+        if (rate != null) learningRate = rate;
 
         JSONArray listOfLayers = (JSONArray) model.get("layers");
 
@@ -57,14 +60,14 @@ public class JsonStorage implements ModelStorage {
                     outputSize.intValue(),
                     layerWeights,
                     layerBiases,
-                    learningRate.floatValue(),
+                    learningRate,
                     StringToObject.INITIALIZATION.get(initialization),
                     StringToObject.STRATEGY.get(strategy)
             ));
         }
 
         return new NeuralNet(
-                learningRate.floatValue(),
+                learningRate,
                 modelLayers,
                 StringToObject.CORRECTION.get(correction)
         );

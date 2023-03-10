@@ -90,9 +90,9 @@ public class NLayer {
         // compute weights gradient and store weight gradients
         for (int i = 0; i < this.outputSize; i++) {
             for (int j = 0; j < this.inputSize; j++)
-                this.weightGradients[i][j] += this.learningRate * this.input[j] * this.output[i] * errorCost[i];
+                this.weightGradients[i][j] += this.input[j] * this.output[i] * errorCost[i];
 
-            this.biasesGradient[i] += this.learningRate * this.output[i] * errorCost[i];
+            this.biasesGradient[i] += this.output[i] * errorCost[i];
         }
 
         if (last) return null;
@@ -114,11 +114,11 @@ public class NLayer {
         // update weights
         for (int i = 0; i < this.outputSize; i++) {
             for (int j = 0; j < this.inputSize; j++) {
-                this.weights[i][j] -= this.weightGradients[i][j] / iteration;
+                this.weights[i][j] -= this.learningRate * (this.weightGradients[i][j] / iteration);
                 this.weightGradients[i][j] = 0;
             }
 
-            this.biases[i] -= this.biasesGradient[i] / iteration;
+            this.biases[i] -= this.learningRate * (this.biasesGradient[i] / iteration);
             this.biasesGradient[i] = 0;
         }
     }

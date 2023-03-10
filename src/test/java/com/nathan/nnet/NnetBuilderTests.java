@@ -1,6 +1,5 @@
 package com.nathan.nnet;
 
-import com.nathan.nnet.correction.CrossEntropy;
 import com.nathan.nnet.correction.MeanSquareError;
 import com.nathan.nnet.dataset.CSV;
 import com.nathan.nnet.dataset.Normalization;
@@ -12,129 +11,9 @@ import com.nathan.nnet.strategies.ReLu;
 import com.nathan.nnet.strategies.Sigmoid;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 class NnetBuilderTests {
-
-	@Test
-	void testNeuralNet() throws Exception {
-		NeuralNet neuralNet = new NeuralNet(7, 10, 2, 8, 0.1f, new HeInitial(), new NormalizedXavier(), new ReLu(), new Sigmoid(), new MeanSquareError());
-
-		// training data
-		List<TrainingData> trainingData = new ArrayList<>();
-
-		float[][] inputs = {
-				{ 0, 1, 0, 0, 1, 0, 0 },
-				{ 1, 1, 1, 0, 0, 1, 1 },
-				{ 1, 1, 1, 0, 1, 1, 0 },
-				{ 0, 1, 1, 1, 1, 0, 0 },
-				{ 1, 0, 1, 1, 1, 1, 0 },
-				{ 1, 0, 1, 1, 1, 1, 1 },
-				{ 1, 1, 0, 0, 1, 0, 0 },
-				{ 1, 1, 1, 1, 1, 1, 1 },
-				{ 1, 1, 1, 1, 1, 0, 0 },
-				{ 1, 1, 0, 1, 1, 1, 1 }
-		};
-
-		float[][] tests = {
-				{ 0, 1, 0, 0, 1, 0, 0 },
-				{ 1, 1, 1, 0, 0, 1, 1 },
-				{ 1, 1, 1, 0, 1, 1, 0 },
-				{ 0, 1, 1, 1, 1, 0, 0 },
-				{ 1, 0, 1, 1, 1, 1, 0 },
-				{ 1, 0, 1, 1, 1, 1, 1 },
-				{ 1, 1, 0, 0, 1, 0, 0 },
-				{ 1, 1, 1, 1, 1, 1, 1 },
-				{ 1, 1, 1, 1, 1, 0, 0 },
-				{ 1, 1, 0, 1, 1, 1, 1 }
-		};
-
-		float[][] outputs = {
-				{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-				{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-		};
-
-		for (int t = 0; t < 10000; t++) {
-			for (int x = 0; x < inputs.length; x++) trainingData.add(new TrainingData(inputs[x], outputs[x]));
-		}
-
-		System.out.println(trainingData.size());
-
-		neuralNet.trainModel(trainingData, 48);
-
-		System.out.println("Tests: ");
-
-		for (float[] data : tests) {
-			float[] output = neuralNet.runModel(data);
-
-			System.out.println("Answer: " + Arrays.toString(output));
-		}
-
-		System.out.println("Weights and Biases: ");
-		neuralNet.printWeightsAndBiases();
-	}
-
-	@Test
-	void buildNNet() throws Exception {
-		// training data
-		List<TrainingData> trainingData = new ArrayList<>();
-
-		float[][] inputs = {
-				{ 0, 1, 0, 0, 1, 0, 0 },
-				{ 1, 1, 1, 0, 0, 1, 1 },
-				{ 1, 1, 1, 0, 1, 1, 0 },
-				{ 0, 1, 1, 1, 1, 0, 0 },
-				{ 1, 0, 1, 1, 1, 1, 0 },
-				{ 1, 0, 1, 1, 1, 1, 1 },
-				{ 1, 1, 0, 0, 1, 0, 0 },
-				{ 1, 1, 1, 1, 1, 1, 1 },
-				{ 1, 1, 1, 1, 1, 0, 0 },
-				{ 1, 1, 0, 1, 1, 1, 1 }
-		};
-
-		float[][] outputs = {
-				{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-				{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-		};
-
-		for (int t = 0; t < 5000; t++) {
-			for (int x = 0; x < inputs.length; x++) trainingData.add(new TrainingData(inputs[x], outputs[x]));
-		}
-
-		NeuralNetBuilder neuralNetBuilder = new NeuralNetBuilder();
-		neuralNetBuilder
-			.setDimensions(7, 10)
-			.setHiddenLayers(2, 8)
-			.setWeightInitialization(new HeInitial(), new NormalizedXavier())
-			.setLearningStrategy(new ReLu(), new Sigmoid())
-			.setErrorCorrection(0.1f, new MeanSquareError())
-			.build()
-			.setTrainingParameters(trainingData, 50,100)
-			.train(5)
-			.test()
-			.setModelStorage("E:\\ML\\tests\\digits.json", new JsonStorage())
-			.save();
-	}
 
 	@Test
 	void loadAndTestModel() throws Exception {
@@ -144,26 +23,39 @@ class NnetBuilderTests {
 		NeuralNetBuilder neuralNetBuilder = new NeuralNetBuilder();
 		neuralNetBuilder
 				.loadModel("E:\\ML\\tests\\diabetes.json", new JsonStorage())
-				.setTrainingParameters(dataset, 256,250)
-				.test()
-				.run(dataset.subList(20, 30));
+				.run(dataset.subList(200, 220));
 	}
 
 	@Test
-	void loadCsv() throws Exception {
+	void loadAndTrainModel() throws Exception {
+		CSV csv = new CSV();
+		List<TrainingData> dataset = csv.loadDataset("E:\\ML\\datasets\\diabetes2.csv", "Outcome", new Normalization());
+
+		NeuralNetBuilder neuralNetBuilder = new NeuralNetBuilder();
+		neuralNetBuilder
+				.loadModel("E:\\ML\\tests\\diabetes.json", new JsonStorage(), 0.005f)
+				.setTrainingParameters(dataset, 167,100)
+				.train(100000)
+				.test()
+				.setModelStorage("E:\\ML\\tests\\diabetes.json", new JsonStorage())
+				.save();
+	}
+
+	@Test
+	void loadAndTrainCsv() throws Exception {
 		CSV csv = new CSV();
 		List<TrainingData> dataset = csv.loadDataset("E:\\ML\\datasets\\diabetes2.csv", "Outcome", new Normalization());
 
 		NeuralNetBuilder neuralNetBuilder = new NeuralNetBuilder();
 		neuralNetBuilder
 				.setDimensions(8, 1)
-				.setHiddenLayers(2, 10)
-				.setWeightInitialization(new HeInitial(), new NormalizedXavier())
-				.setLearningStrategy(new LeakyReLu(), new Sigmoid())
-				.setErrorCorrection(0.2f, new MeanSquareError())
+				.setHiddenLayers(2, 3)
+				.setWeightInitialization(new NormalizedXavier(), new NormalizedXavier())
+				.setLearningStrategy(new Sigmoid(), new Sigmoid())
+				.setErrorCorrection(0.01f, new MeanSquareError())
 				.build()
-				.setTrainingParameters(dataset, 256,250)
-				.train(150000)
+				.setTrainingParameters(dataset, 167, 100)
+				.train(100000)
 				.test()
 				.setModelStorage("E:\\ML\\tests\\diabetes.json", new JsonStorage())
 				.save();
