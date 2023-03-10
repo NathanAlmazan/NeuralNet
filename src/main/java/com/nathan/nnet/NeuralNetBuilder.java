@@ -1,23 +1,16 @@
 package com.nathan.nnet;
 
 import com.nathan.nnet.correction.ErrorCorrection;
-import com.nathan.nnet.initialization.WeightInitialization;
+import com.nathan.nnet.dataset.DatasetLoader;
+import com.nathan.nnet.dataset.NormalizeData;
 import com.nathan.nnet.store.ModelStorage;
-import com.nathan.nnet.strategies.Strategy;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class NeuralNetBuilder {
-	private int inputSize;
-	private int outputSize;
-	private int hLayers;
-	private int hLayersSize;
 	private float learningRate;
-	private WeightInitialization defaultInitialization;
-	private WeightInitialization outputInitialization;
-	private Strategy defaultStrategy;
-	private Strategy outputStrategy;
+	private List<NLayer> layers;
 	private ErrorCorrection correction;
 	private NeuralNet neuralNet;
 	private List<TrainingData> trainingData;
@@ -26,32 +19,8 @@ public class NeuralNetBuilder {
 	private String storageLocation;
 	private ModelStorage modelStorage;
 
-	public NeuralNetBuilder setDimensions(int inputSize, int outputSize) {
-		this.inputSize = inputSize;
-		this.outputSize = outputSize;
-
-		return this;
-	}
-
-	public NeuralNetBuilder setHiddenLayers(int hLayers, int hLayersSize) {
-		this.hLayers = hLayers;
-		this.hLayersSize = hLayersSize;
-
-		return this;
-	}
-
-	public NeuralNetBuilder setWeightInitialization(WeightInitialization defaultInitialization, WeightInitialization outputInitialization) {
-		this.defaultInitialization = defaultInitialization;
-		this.outputInitialization = outputInitialization;
-
-		return this;
-	}
-
-	public NeuralNetBuilder setLearningStrategy(Strategy defaultStrategy, Strategy outputStrategy) {
-		this.defaultStrategy = defaultStrategy;
-		this.outputStrategy = outputStrategy;
-
-		return this;
+	public void setLayers(List<NLayer> layers) {
+		this.layers = layers;
 	}
 
 	public NeuralNetBuilder setErrorCorrection(float learningRate, ErrorCorrection correction) {
@@ -61,7 +30,11 @@ public class NeuralNetBuilder {
 		return this;
 	}
 
-	public NeuralNetBuilder setTrainingParameters(List<TrainingData> trainingData, int batchSize, int testSize) {
+	public NeuralNetBuilder setTrainingParameters(
+			List<TrainingData> trainingData,
+			int batchSize,
+			int testSize
+	) {
 		this.trainingData = trainingData;
 		this.batchSize = batchSize;
 		this.testSize = testSize;
@@ -94,16 +67,10 @@ public class NeuralNetBuilder {
 
 	public NeuralNetBuilder build() {
 		this.neuralNet = new NeuralNet(
-				this.inputSize,
-				this.outputSize,
-				this.hLayers,
-				this.hLayersSize,
 				this.learningRate,
-				this.defaultInitialization,
-				this.outputInitialization,
-				this.defaultStrategy,
-				this.outputStrategy,
-				this.correction);
+				this.layers,
+				this.correction
+		);
 
 		return this;
 	}
@@ -153,9 +120,5 @@ public class NeuralNetBuilder {
 		this.modelStorage.saveModel(this.neuralNet, this.storageLocation);
 
 		return this;
-	}
-
-	public NeuralNet getNeuralNet() {
-		return neuralNet;
 	}
 }
